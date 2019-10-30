@@ -135,3 +135,18 @@ Resources:
                 - Name: buildResults
               Configuration:
                 ProjectName: !Ref BuildProject
+        - Name: Deploy
+          Actions:
+            - Name: Networking
+              ActionTypeId:
+                Category: Deploy
+                Provider: CloudFormation
+                Owner: AWS
+                Version: 1
+              InputArtifacts:
+                - Name: buildResults
+              Configuration:
+                StackName: cfn-hello-world-networking
+                TemplatePath: buildResults::networking.template.yml
+                ActionMode: CREATE_UPDATE
+                RoleArn: !ImportValue cfn-utilities:MasterRoleArn
