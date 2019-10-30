@@ -2,9 +2,11 @@ Mappings:
   Accounts:
     Dev:
       VpcId: vpc-086a061899dc4ff81
+      Domain: dev.brigh.id
 
     Prod:
       VpcId: vpc-01c1c70487a3ff7b0
+      Domain: brigh.id
 
 Resources:
   DevListenerRule:
@@ -16,7 +18,16 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref DevTargetGroup
       Conditions:
-
+        - Field: host-header
+          HostHeaderConfig:
+            Values:
+              - !FindInMap [Accounts, Dev, Domain]
+              - !FindInMap [Accounts, Prod, Domain]
+        - Field: path-pattern
+          PathPatternConfig:
+            Values:
+              - /hello-world
+              
   DevTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
