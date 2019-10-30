@@ -71,7 +71,7 @@ Resources:
           - Name: ARTIFACT_STORE
             Value: !Ref ArtifactStore
           - Name: REPOSITORY_URI
-            Value: 
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${DockerRepo}
         Type: LINUX_CONTAINER
       Artifacts:
         Type: CODEPIPELINE
