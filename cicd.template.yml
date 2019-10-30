@@ -77,3 +77,61 @@ Resources:
         Type: CODEPIPELINE
       Source:
         Type: CODEPIPELINE
+
+  Webhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GithubToken
+      Filters:
+        - JsonPath: $.ref
+          MatchEquals: "refs/heads/{Branch}"
+      TargetPipeline: !Ref Pipeline
+      TargetAction: Source
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: true
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub ${AWS::StackName}-pipeline 
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactStore
+        EncryptionKey: 
+          Id: !ImportValue cfn-utilities:ArtifactKeyArn
+          Type: KMS
+      RoleArn: !ImportValue cfn-utilities:MasterRoleArn
+      RestartExecutionOnUpdate: true
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Provider: GitHub
+                Owner: ThirdParty
+                Version: 1
+              OutputArtifacts:
+                - Name: sourceCode
+              Configuration:
+                Owner: !Ref GithubOwner
+                Repo: !Ref GithubRepo
+                Branch: !Ref GithubBranch
+                OAuthToken: !Ref GithubToken
+                PollForSourceChanges: false
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Provider: CodeBuild
+                Owner: AWS
+                Version: 1
+              InputArtifacts:
+                - Name: sourceCode
+              OutputArtifacts:
+                - Name: buildResults
+              Configuration:
+                ProjectName: !Ref BuildProject
