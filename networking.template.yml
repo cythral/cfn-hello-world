@@ -1,11 +1,9 @@
 Mappings:
   Accounts:
     Dev:
-      VpcId: vpc-086a061899dc4ff81
       Domain: dev.brigh.id
 
     Prod:
-      VpcId: vpc-01c1c70487a3ff7b0
       Domain: brigh.id
 
 Resources:
@@ -33,6 +31,13 @@ Resources:
     Properties:
       Name: cfn-hello-world-dev
       TargetType: ip
-      VpcId: !FindInMap [Accounts, Dev, VpcId]
+      VpcId: !ImportValue cfn-utilities:VpcId
       Port: 443
       Protocol: HTTP
+
+Outputs:
+  DevTargetGroupArn:
+    Value: !Ref DevTargetGroup
+    Description: ARN of the Hello World Dev Target Group
+    Export:
+      Name: !Sub ${AWS::StackName}:DevTargetGroupArn
