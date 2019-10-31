@@ -177,3 +177,4 @@ Resources:
                   }
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
+                Capabilities: CAPABILITY_IAM
