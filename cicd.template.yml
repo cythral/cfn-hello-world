@@ -173,7 +173,7 @@ Resources:
                   {
                     "TargetGroupArn": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:TargetGroupArn" ] },
                     "SubnetIds": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:SubnetIds" ] },
-                    "SecurityGroupId": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:SecurityGroupId" ] }
+                    "SecurityGroupId": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:SecurityGroupId" ] }
                   }
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
