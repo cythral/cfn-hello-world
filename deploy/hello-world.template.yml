@@ -27,6 +27,7 @@ Resources:
     Properties:
       TargetType: ip
       VpcId: !ImportValue cfn-utilities:VpcId
+      Protocol: HTTP
       Port: 80
       
   Cluster:
@@ -79,7 +80,7 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: !Ref AWS::StackName
-              
+
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
