@@ -156,6 +156,7 @@ Resources:
                 OutputFileName: networking-output.json
             - Name: 
               RunOrder: 2
+              RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
               ActionTypeId:
                 Category: Deploy
                 Provider: CloudFormation
