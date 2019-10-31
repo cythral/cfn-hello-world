@@ -147,7 +147,6 @@ Resources:
                 Version: 1
               InputArtifacts:
                 - Name: buildResults
-                - Name: networkingExports
               Configuration:
                 StackName: cfn-hello-world
                 TemplatePath: buildResults::hello-world.template.yml
