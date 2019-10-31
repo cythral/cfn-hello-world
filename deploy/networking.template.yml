@@ -40,13 +40,13 @@ Outputs:
     Description: ARN of the hello world dev target group
     Value: !Ref DevTargetGroup
     Export:
-      Name: !Sub ${AWS::StackName}-DevTargetGroupArn
+      Name: !Sub ${AWS::StackName}:DevTargetGroupArn
 
-  SecurityGroupId:
-    Description: ID of the security group to use for hello world
-    Value: !ImportValue cfn-utilities:WebSecurityGroupId
+  VpcId:
+    Description: ID of the vpc to use for hello world
+    Value: !ImportValue cfn-utilities:VpcId
     Export:
-      Name: !Sub ${AWS::StackName}-SecurityGroupId
+      Name: !Sub ${AWS::StackName}:VpcId
 
   SubnetIds:
     Description: List of subnet IDs to use for hello world

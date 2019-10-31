@@ -7,9 +7,9 @@ Parameters:
     Type: String
     Description: ARN of the Target Group to register instances with
 
-  SecurityGroupId:
-    Type: AWS::EC2::SecurityGroup::Id
-    Description: Group ID of security group to use
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Id of the vpc to use
 
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
@@ -30,7 +30,7 @@ Resources:
         AwsvpcConfiguration:
           Subnets: !Ref SubnetIds
           SecurityGroups:
-            - !Ref SecurityGroupId
+            - !Ref SecurityGroup
           AssignPublicIp: ENABLED
       LoadBalancers:
         - ContainerName: hello-world
@@ -64,6 +64,21 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: !Ref AWS::StackName
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for web ports 80 and 443
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref VpcId
 
   TaskRole:
     Type: AWS::IAM::Role

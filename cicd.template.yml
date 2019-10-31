@@ -173,7 +173,7 @@ Resources:
                   {
                     "TargetGroupArn": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "DevTargetGroupArn" ] },
                     "SubnetIds": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "SubnetIds" ] },
-                    "SecurityGroupId": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "SecurityGroupId" ] }
+                    "VpcId": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "VpcId" ] }
                   }
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
