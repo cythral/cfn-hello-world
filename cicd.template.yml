@@ -171,9 +171,9 @@ Resources:
                 TemplateConfiguration: buildResults::hello-world.config.json
                 ParameterOverrides: |
                   {
-                    "TargetGroupArn": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:DevTargetGroupArn" ] },
-                    "SubnetIds": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:SubnetIds" ] },
-                    "SecurityGroupId": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking:SecurityGroupId" ] }
+                    "TargetGroupArn": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking-DevTargetGroupArn" ] },
+                    "SubnetIds": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking-SubnetIds" ] },
+                    "SecurityGroupId": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "cfn-hello-world-networking-SecurityGroupId" ] }
                   }
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
