@@ -41,7 +41,9 @@ Resources:
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
-          Subnets: !Split [ ",", !ImportValue cfn-utilities:SubnetIds ]
+          Subnets: !Split
+            - ","
+            - !ImportValue cfn-utilities:SubnetIds
           SecurityGroups:
             - !ImportValue cfn-utilities:WebSecurityGroupId
           AssignPublicIp: ENABLED
