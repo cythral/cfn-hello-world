@@ -50,9 +50,7 @@ Outputs:
 
   SubnetIds:
     Description: List of subnet IDs to use for hello world
-    Value: !Join 
-      - ","
-      - !ImportValue cfn-utilities:SubnetIds
+    Value: !Join  [ ",", !ImportValue cfn-utilities:SubnetIds ]
     Export:
       Name: !Sub ${AWS::StackName}:SubnetIds
     
