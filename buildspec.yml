@@ -10,10 +10,14 @@ phases:
 
   build:
     commands:
-      - docker build -t "$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION" .
-      - docker push "$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - export IMAGE="$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - docker build -t $IMAGE .
+      - docker push $IMAGE
+      - echo {} | jq ".Parameters.Image=\"$IMAGE\"" > hello-world.config.json
 
 artifacts:
   discard-paths: yes
   files:
-    - "networking.template.yml"
+    - "deploy/networking.template.yml"
+    - "deploy/hello-world.template.yml"
+    - "hello-world.config.json"
