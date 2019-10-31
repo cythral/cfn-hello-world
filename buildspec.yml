@@ -13,11 +13,15 @@ phases:
       - export IMAGE="$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"
       - docker build -t $IMAGE .
       - docker push $IMAGE
-      - echo {} | jq ".Parameters.Image=\"$IMAGE\"" > hello-world.config.json
+      
+      # Build config
+      - config={}
+      - config=$(echo $config | jq ".Parameters.Image=\"$IMAGE\"")
+      - echo $config | jq ".Parameters.DomainName=\"hello-world.dev.brigh.id\"" > hello-world.dev.config.json
+      - echo $config | jq ".Parameters.DomainName=\"hello-world.brigh.id\"" > hello-world.prod.config.json
 
 artifacts:
   discard-paths: yes
   files:
-    - "deploy/networking.template.yml"
     - "deploy/hello-world.template.yml"
-    - "hello-world.config.json"
+    - "hello-world.*.config.json"

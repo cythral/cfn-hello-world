@@ -137,23 +137,6 @@ Resources:
                 ProjectName: !Ref BuildProject
         - Name: Deploy
           Actions:
-            - Name: Networking
-              RunOrder: 1
-              ActionTypeId:
-                Category: Deploy
-                Provider: CloudFormation
-                Owner: AWS
-                Version: 1
-              InputArtifacts:
-                - Name: buildResults
-              OutputArtifacts:
-                - Name: networkingExports
-              Configuration:
-                StackName: cfn-hello-world-networking
-                TemplatePath: buildResults::networking.template.yml
-                ActionMode: CREATE_UPDATE
-                RoleArn: !ImportValue cfn-utilities:MasterRoleArn
-                OutputFileName: networking-output.json
             - Name: Dev
               RunOrder: 2
               RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
@@ -168,13 +151,7 @@ Resources:
               Configuration:
                 StackName: cfn-hello-world
                 TemplatePath: buildResults::hello-world.template.yml
-                TemplateConfiguration: buildResults::hello-world.config.json
-                ParameterOverrides: |
-                  {
-                    "TargetGroupArn": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "DevTargetGroupArn" ] },
-                    "SubnetIds": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "SubnetIds" ] },
-                    "VpcId": { "Fn::GetParam": [ "networkingExports", "networking-output.json", "VpcId" ] }
-                  }
+                TemplateConfiguration: buildResults::hello-world.dev.config.json
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
                 Capabilities: CAPABILITY_IAM

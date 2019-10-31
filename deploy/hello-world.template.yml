@@ -1,21 +1,34 @@
 Parameters:
   Image:
     Type: String
-    Description: Hello World Docker Image.
+    Description: Docker Image uri to pull
 
-  TargetGroupArn:
+  DomainName:
     Type: String
-    Description: ARN of the Target Group to register instances with
-
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-    Description: Id of the vpc to use
-
-  SubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
-    Description: List of subnets to use
+    Description: Hello world domain name to use
 
 Resources:
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !ImportValue cfn-utilities:HttpListenerArn
+      Priority: 2
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      Conditions:
+        - Field: host-header
+          HostHeaderConfig:
+            Values:
+              - !Ref DomainName
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: ip
+      VpcId: !ImportValue cfn-utilities:VpcId
+      Port: 80
+      
   Cluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -28,14 +41,14 @@ Resources:
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
-          Subnets: !Ref SubnetIds
+          Subnets: !Split [ ",", !ImportValue cfn-utilities:SubnetIds ]
           SecurityGroups:
-            - !Ref SecurityGroup
+            - !ImportValue cfn-utilities:WebSecurityGroupId
           AssignPublicIp: ENABLED
       LoadBalancers:
         - ContainerName: hello-world
           ContainerPort: 80
-          TargetGroupArn: !Ref TargetGroupArn
+          TargetGroupArn: !Ref TargetGroup
       TaskDefinition: !Ref TaskDefinition
       DesiredCount: 1
       DeploymentConfiguration:
