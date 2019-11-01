@@ -17,6 +17,22 @@ Parameters:
     Description: Name of the github branch to track
 
 Resources:
+  DevDnsRecords:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !ImportValue cfn-dns:HostedZoneId
+      RecordSets:
+        - Name: hello-world.dev.brigh.id
+          Type: A
+          AliasTarget:
+            HostedZoneId: !ImportValue cfn-core:LoadBalancerCanonicalHostedZoneId
+            DNSName: !ImportValue cfn-core:LoadBalancerDnsName
+        - Name: hello-world.dev.brigh.id
+          Type: AAAA
+          AliasTarget:
+            HostedZoneId: !ImportValue cfn-core:LoadBalancerCanonicalHostedZoneId
+            DNSName: !ImportValue cfn-core:LoadBalancerDnsName
+        
   ArtifactStore:
     Type: AWS::S3::Bucket
 
