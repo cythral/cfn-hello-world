@@ -167,10 +167,9 @@ Resources:
                 - Name: buildResults
               Configuration:
                 ProjectName: !Ref BuildProject
-        - Name: Deploy
+        - Name: Dev
           Actions:
-            - Name: Dev
-              RunOrder: 2
+            - Name: Deploy
               RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
               ActionTypeId:
                 Category: Deploy
@@ -186,6 +185,17 @@ Resources:
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
                 Capabilities: CAPABILITY_IAM
+        - Name: Prod
+          Actions:
+            - Name: Approve
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              InputArtifacts: []
+              OutputArtifacts: []
+              RunOrder: 1
             - Name: Prod
               RunOrder: 2
               RoleArn: "{{resolve:ssm:ProdAgentRoleArn:1}}"
