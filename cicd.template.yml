@@ -32,7 +32,23 @@ Resources:
           AliasTarget:
             HostedZoneId: !ImportValue cfn-core:LoadBalancerCanonicalHostedZoneId
             DNSName: !ImportValue cfn-core:LoadBalancerDnsName
-        
+
+  ProdDnsRecords:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !ImportValue cfn-dns:HostedZoneId
+      RecordSets:
+        - Name: hello-world.brigh.id
+          Type: A
+          AliasTarget:
+            HostedZoneId: !ImportValue cfn-core:LoadBalancerCanonicalHostedZoneId
+            DNSName: !ImportValue cfn-core:LoadBalancerDnsName
+        - Name: hello-world.brigh.id
+          Type: AAAA
+          AliasTarget:
+            HostedZoneId: !ImportValue cfn-core:LoadBalancerCanonicalHostedZoneId
+            DNSName: !ImportValue cfn-core:LoadBalancerDnsName
+      
   ArtifactStore:
     Type: AWS::S3::Bucket
 
@@ -169,4 +185,21 @@ Resources:
                 TemplateConfiguration: buildResults::hello-world.dev.config.json
                 ActionMode: CREATE_UPDATE
                 RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
+                Capabilities: CAPABILITY_IAM
+            - Name: Prod
+              RunOrder: 2
+              RoleArn: "{{resolve:ssm:ProdAgentRoleArn:1}}"
+              ActionTypeId:
+                Category: Deploy
+                Provider: CloudFormation
+                Owner: AWS
+                Version: 1
+              InputArtifacts:
+                - Name: buildResults
+              Configuration:
+                StackName: cfn-hello-world
+                TemplatePath: buildResults::hello-world.template.yml
+                TemplateConfiguration: buildResults::hello-world.prod.config.json
+                ActionMode: CREATE_UPDATE
+                RoleArn: "{{resolve:ssm:ProdAgentRoleArn:1}}"
                 Capabilities: CAPABILITY_IAM
