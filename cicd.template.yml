@@ -37,7 +37,7 @@ Resources:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneId: !ImportValue cfn-dns:HostedZoneId
-      RecordSets:
+      RecordSets: 
         - Name: hello-world.brigh.id
           Type: A
           AliasTarget:
