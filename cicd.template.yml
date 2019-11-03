@@ -67,8 +67,8 @@ Resources:
             Principal:
               AWS:
                 - !Ref AWS::AccountId
-                - "{{resolve:ssm:DevAgentRoleArn:1}}"
-                - "{{resolve:ssm:ProdAgentRoleArn:1}}"
+                - !ImportValue cfn-metadata:DevAgentRoleArn
+                - !ImportValue cfn-metadata:ProdAgentRoleArn
   
   DockerRepo:
     Type: AWS::ECR::Repository
@@ -86,8 +86,8 @@ Resources:
             Principal:
               AWS:
                 - !Ref AWS::AccountId
-                - "{{resolve:ssm:DevAccountId:1}}"
-                - "{{resolve:ssm:ProdAccountId:1}}"
+                - !ImportValue cfn-metadata:DevAccountId
+                - !ImportValue cfn-metadata:ProdAccountId
 
   BuildProject:
     Type: AWS::CodeBuild::Project
@@ -170,7 +170,7 @@ Resources:
         - Name: Dev
           Actions:
             - Name: Deploy
-              RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
+              RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
               ActionTypeId:
                 Category: Deploy
                 Provider: CloudFormation
@@ -183,7 +183,7 @@ Resources:
                 TemplatePath: buildResults::hello-world.template.yml
                 TemplateConfiguration: buildResults::hello-world.dev.config.json
                 ActionMode: CREATE_UPDATE
-                RoleArn: "{{resolve:ssm:DevAgentRoleArn:1}}"
+                RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
                 Capabilities: CAPABILITY_IAM
         - Name: Prod
           Actions:
@@ -198,7 +198,7 @@ Resources:
               RunOrder: 1
             - Name: Prod
               RunOrder: 2
-              RoleArn: "{{resolve:ssm:ProdAgentRoleArn:1}}"
+              RoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
               ActionTypeId:
                 Category: Deploy
                 Provider: CloudFormation
@@ -211,5 +211,5 @@ Resources:
                 TemplatePath: buildResults::hello-world.template.yml
                 TemplateConfiguration: buildResults::hello-world.prod.config.json
                 ActionMode: CREATE_UPDATE
-                RoleArn: "{{resolve:ssm:ProdAgentRoleArn:1}}"
+                RoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
                 Capabilities: CAPABILITY_IAM
