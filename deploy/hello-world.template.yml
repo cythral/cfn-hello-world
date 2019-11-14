@@ -108,7 +108,7 @@ Resources:
       ScheduledActions:
         # Everyday at 7pm CST
         - ScheduledActionName: Down
-          StartTime: '2019-11-141T00:00:00Z'
+          StartTime: '2019-11-14T00:00:00Z'
           EndTime: '2999-01-03T00:00:00Z'
           ScalableTargetAction:
             MaxCapacity: 0
