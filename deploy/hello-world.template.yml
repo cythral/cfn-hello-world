@@ -1,3 +1,4 @@
+Description: Hello World using Docker, ECS, and CFN
 Parameters:
   Image:
     Type: String
