@@ -1,3 +1,4 @@
+Description: CICD pipeline for Hello World
 Parameters:
   GithubToken:
     Type: String
@@ -188,7 +189,7 @@ Resources:
         - Name: Prod
           Actions:
             - Name: Approve
-              ActionTypeId:
+              ActionTypeId: 
                 Category: Approval
                 Owner: AWS
                 Provider: Manual
