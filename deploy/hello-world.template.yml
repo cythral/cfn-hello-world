@@ -19,7 +19,9 @@ Resources:
             Action: sts:AssumeRole
             Principal:
               Service: lambda.amazonaws.com
-              AWS: !ImportValue cfn-utilities:MasterAccountId
+              AWS: !Sub 
+                - arn:aws:iam::${AccountId}:root
+                - AccountId: !ImportValue cfn-utilities:MasterAccountId
       Policies:
         - PolicyName: HelloWorld
           PolicyDocument:
