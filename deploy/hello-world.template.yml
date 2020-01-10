@@ -18,9 +18,8 @@ Resources:
           - Effect: Allow
             Action: sts:AssumeRole
             Principal:
-              Service: lambda.amazonaws.com
               AWS: !Sub 
-                - arn:aws:iam::${AccountId}:root
+                - arn:aws:iam::${AccountId}:role/cfn-resources-CertificateRole-H12NWXVKTFJA
                 - AccountId: !ImportValue cfn-utilities:MasterAccountId
       Policies:
         - PolicyName: HelloWorld
@@ -31,16 +30,16 @@ Resources:
                 Action: acm:*
                 Resource: "*"
 
-  TestCertificate:
-    Type: Custom::Certificate
-    Properties:
-      ServiceToken: !Sub 
-        - arn:aws:lambda:${AWS::Region}:${MasterAccountId}:function:Certificate
-        - MasterAccountId: !ImportValue cfn-utilities:MasterAccountId
-      DomainName: !Ref DomainName
-      ValidationType: DNS
-      HostedZoneId: Z1EDHGW4QJZDPG
-      CreationRoleArn: !GetAtt TestCertificateRole.Arn
+  # TestCertificate:
+  #   Type: Custom::Certificate
+  #   Properties:
+  #     ServiceToken: !Sub 
+  #       - arn:aws:lambda:${AWS::Region}:${MasterAccountId}:function:Certificate
+  #       - MasterAccountId: !ImportValue cfn-utilities:MasterAccountId
+  #     DomainName: !Ref DomainName
+  #     ValidationType: DNS
+  #     HostedZoneId: Z1EDHGW4QJZDPG
+  #     CreationRoleArn: !GetAtt TestCertificateRole.Arn
 
 
   ListenerRule:
