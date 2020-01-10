@@ -22,7 +22,8 @@ Resources:
                 - arn:aws:iam::${AccountId}:role/cfn-resources-CertificateRole-H12NWXVKTFJA
                 - AccountId: !ImportValue cfn-utilities:MasterAccountId
       Policies:
-        - PolicyDocument:
+        - PolicyName: HelloWorld
+          PolicyDocument:
             Version: 2012-10-17
             Statement: 
               - Effect: Allow
