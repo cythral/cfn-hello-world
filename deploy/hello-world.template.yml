@@ -19,9 +19,7 @@ Resources:
             Action: sts:AssumeRole
             Principal:
               Service: lambda.amazonaws.com
-              AWS: !Sub 
-                - arn:aws:iam::${AccountId}:role/cfn-resources-CertificateRole-H12NWXVKTFJA
-                - AccountId: !ImportValue cfn-utilities:MasterAccountId
+              AWS: !ImportValue cfn-utilities:MasterAccountId
       Policies:
         - PolicyName: HelloWorld
           PolicyDocument:
