@@ -9,6 +9,38 @@ Parameters:
     Description: Hello world domain name to use
 
 Resources:
+  TestCertificateRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              AWS: !Sub 
+                - arn:aws:iam::${AccountId}:role/cfn-resources-CertificateRole-H12NWXVKTFJA
+                - AccountId: !ImportValue cfn-utilities:MasterAccountId
+      Policies:
+        - PolicyName: HelloWorld
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement: 
+              - Effect: Allow
+                Action: acm:*
+                Resource: "*"
+
+  TestCertificate:
+    Type: Custom::Certificate
+    Properties:
+      ServiceToken: !Sub 
+        - arn:aws:lambda:${AWS::Region}:${MasterAccountId}:function:Certificate
+        - MasterAccountId: !ImportValue cfn-utilities:MasterAccountId
+      DomainName: !Ref DomainName
+      ValidationType: DNS
+      HostedZoneId: Z1EDHGW4QJZDPG
+      CreationRoleArn: !GetAtt TestCertificateRole.Arn
+
   ListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
