@@ -185,7 +185,7 @@ Resources:
                 TemplateConfiguration: buildResults::hello-world.dev.config.json
                 ActionMode: CREATE_UPDATE
                 RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
-                Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
+                Capabilities: CAPABILITY_IAM
         - Name: Prod
           Actions:
             - Name: Approve
