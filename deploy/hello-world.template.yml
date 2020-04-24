@@ -125,7 +125,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       EventPattern:
-        account: ["018303830101"]
+        account: [!ImportValue cfn-utilities:MasterAccountId]
         source: ["aws.codepipeline"]
         detail-type: ["CodePipeline Pipeline Execution State Change"]
         detail:
