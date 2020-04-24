@@ -16,19 +16,18 @@ Resources:
       Runtime: nodejs10.x
       Handler: index.handler
       AutoPublishAlias: FallbackResponseTest
-      Code:
-        ZipFile: |
-          exports.handler = function() {
-            return {
-              statusCode: 200,
-              statusDescription: 'OK',
-              headers: {
-                "content-type": "text/plain"
-              },
-              body: 'Fallback Test',
-              isBase64Encoded: false
-            }
+      InlineCode: |
+        exports.handler = function() {
+          return {
+            statusCode: 200,
+            statusDescription: 'OK',
+            headers: {
+              "content-type": "text/plain"
+            },
+            body: 'Fallback Test',
+            isBase64Encoded: false
           }
+        }
 
   ListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
