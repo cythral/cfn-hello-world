@@ -159,7 +159,7 @@ Resources:
         CustomizedMetricSpecification:
           Dimensions:
             - Name: TopicName
-              Value: !Ref ScalingTopic
+              Value: !GetAtt ScalingTopic.TopicName
           MetricName: NumberOfMessagesPublished
           Namespace: AWS/SNS
           Statistic: Maximum
