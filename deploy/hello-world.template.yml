@@ -121,7 +121,7 @@ Resources:
       PolicyType: TargetTrackingScaling
       ScalingTargetId: !Ref ScalingTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 0
+        TargetValue: 8.515920e-109
         ScaleInCooldown: 900
         PredefinedMetricSpecification:
           PredefinedMetricType: ALBRequestCountPerTarget
