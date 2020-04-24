@@ -1,4 +1,5 @@
 Description: Hello World using Docker, ECS, and CFN
+Transform: AWS::Serverless-2016-10-31
 Parameters:
   Image:
     Type: String
@@ -9,6 +10,26 @@ Parameters:
     Description: Hello world domain name to use
 
 Resources:
+  FallbackResponseLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs10.x
+      Handler: index.handler
+      AutoPublishAlias: FallbackResponseTest
+      Code:
+        ZipFile: |
+          exports.handler = function() {
+            return {
+              statusCode: 200,
+              statusDescription: 'OK',
+              headers: {
+                "content-type": "text/plain"
+              },
+              body: 'Fallback Test',
+              isBase64Encoded: false
+            }
+          }
+
   ListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
@@ -16,7 +37,12 @@ Resources:
       Priority: 2
       Actions:
         - Type: forward
-          TargetGroupArn: !Ref TargetGroup
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref TargetGroup
+                Weight: 1
+              - TargetGroupArn: !Ref FallbackResponseTargetGroup
+                Weight: 0
       Conditions:
         - Field: host-header
           HostHeaderConfig:
@@ -33,7 +59,27 @@ Resources:
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: '30'
-      
+
+  FallbackResponsePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref FallbackResponseLambda.Alias
+      Principal: elasticloadbalancing.amazonaws.com
+      SourceArn: !Sub arn:aws:elasticloadbalancing:${AWS::Region}:${AWS::AccountId}:targetgroup/fallback-response-target/*
+
+  FallbackResponseTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: FallbackResponsePermission
+    Properties:
+      Name: fallback-response-target
+      TargetType: lambda
+      TargetGroupAttributes:
+        - Key: lambda.multi_value_headers.enabled
+          Value: false
+      Targets:
+        - Id: !Ref FallbackResponseLambda.Alias
+
   Cluster:
     Type: AWS::ECS::Cluster
     Properties:
