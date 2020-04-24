@@ -152,7 +152,7 @@ Resources:
       PolicyType: TargetTrackingScaling
       ScalingTargetId: !Ref ScalingTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 0.0
+        TargetValue: 8.51592E-109
         ScaleInCooldown: 300
         ScaleOutCooldown: 0
         CustomizedMetricSpecification:
