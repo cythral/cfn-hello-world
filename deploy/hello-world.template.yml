@@ -104,30 +104,30 @@ Resources:
     Properties:
       RetentionInDays: 14
 
-  ScalingTarget:
-    Type: AWS::ApplicationAutoScaling::ScalableTarget
-    Properties:
-      MaxCapacity: 1
-      MinCapacity: 0
-      ResourceId: !Sub service/${Cluster}/${Service.Name}
-      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService 
-      ScalableDimension: ecs:service:DesiredCount
-      ServiceNamespace: ecs
+  # ScalingTarget:
+  #   Type: AWS::ApplicationAutoScaling::ScalableTarget
+  #   Properties:
+  #     MaxCapacity: 1
+  #     MinCapacity: 0
+  #     ResourceId: !Sub service/${Cluster}/${Service.Name}
+  #     RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService 
+  #     ScalableDimension: ecs:service:DesiredCount
+  #     ServiceNamespace: ecs
 
-  ScalingPolicy:
-    Type: AWS::ApplicationAutoScaling::ScalingPolicy
-    Properties:
-      PolicyName: HelloWorldScaling
-      PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref ScalingTarget
-      TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 0
-        ScaleInCooldown: 900
-        PredefinedMetricSpecification:
-          PredefinedMetricType: ALBRequestCountPerTarget
-          ResourceLabel: !Sub
-            - ${LoadBalancerFullName}/${TargetGroupFullName}
-            - LoadBalancerFullName: !ImportValue cfn-utilities:LoadBalancerFullName
-              TargetGroupFullName: !GetAtt TargetGroup.TargetGroupFullName
+  # ScalingPolicy:
+  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  #   Properties:
+  #     PolicyName: HelloWorldScaling
+  #     PolicyType: TargetTrackingScaling
+  #     ScalingTargetId: !Ref ScalingTarget
+  #     TargetTrackingScalingPolicyConfiguration:
+  #       TargetValue: 0
+  #       ScaleInCooldown: 900
+  #       PredefinedMetricSpecification:
+  #         PredefinedMetricType: ALBRequestCountPerTarget
+  #         ResourceLabel: !Sub
+  #           - ${LoadBalancerFullName}/${TargetGroupFullName}
+  #           - LoadBalancerFullName: !ImportValue cfn-utilities:LoadBalancerFullName
+  #             TargetGroupFullName: !GetAtt TargetGroup.TargetGroupFullName
 
 
