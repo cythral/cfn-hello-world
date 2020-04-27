@@ -15,11 +15,7 @@ phases:
       - docker push $IMAGE
       
       # Build config
-      - config={}
-      - config=$(echo $config | jq ".Parameters.Image=\"$IMAGE\"")
-      - echo $config | jq ".Parameters.DomainName=\"hello-world.dev.brigh.id\"" > hello-world.dev.config.json
-      - echo $config | jq ".Parameters.DomainName=\"hello-world.brigh.id\"" > hello-world.prod.config.json
-
+      - deploy/create-config-files.sh $IMAGE
 artifacts:
   discard-paths: yes
   files:

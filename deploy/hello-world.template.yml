@@ -8,6 +8,13 @@ Parameters:
     Type: String
     Description: Hello world domain name to use
 
+  EnableServiceStopping:
+    Type: String
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Whether or not to enable service stopping on the cluster
+
 Resources:
   ListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
@@ -38,6 +45,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Ref AWS::StackName
+      Tags:
+        - Key: ENABLE_SERVICE_STOPPING
+          Value: !Ref EnableServiceStopping
 
   Service:
     Type: AWS::ECS::Service
@@ -104,66 +114,5 @@ Resources:
     Properties:
       RetentionInDays: 14
 
-  ScalingTopic:
-    Type: AWS::SNS::Topic
-
-  ScalingTopicPolicy:
-    Type: AWS::SNS::TopicPolicy
-    Properties:
-      Topics:
-        - !Ref ScalingTopic
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action: sns:Publish
-            Resource: "*"
-            Principal:
-              Service: events.amazonaws.com
-          
-  PipelineStartScaleEvent:
-    Type: AWS::Events::Rule
-    Properties:
-      EventPattern:
-        account: 
-          - !ImportValue cfn-utilities:MasterAccountId
-        source: ["aws.codepipeline"]
-        detail-type: ["CodePipeline Pipeline Execution State Change"]
-        detail:
-          state: ["STARTED"]
-          pipeline: [!Sub "${AWS::StackName}-cicd-pipeline"]
-      Targets:
-        - Id: Topic
-          Arn: !Ref ScalingTopic
-
-  ScalingTarget:
-    Type: AWS::ApplicationAutoScaling::ScalableTarget
-    Properties:
-      MaxCapacity: 1
-      MinCapacity: 0
-      ResourceId: !Sub service/${Cluster}/${Service.Name}
-      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService 
-      ScalableDimension: ecs:service:DesiredCount
-      ServiceNamespace: ecs
-
-  ScalingPolicy:
-    Type: AWS::ApplicationAutoScaling::ScalingPolicy
-    Properties:
-      PolicyName: HelloWorldScaling
-      PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref ScalingTarget
-      TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 8.51592E-109
-        ScaleInCooldown: 300
-        ScaleOutCooldown: 0
-        CustomizedMetricSpecification:
-          Dimensions:
-            - Name: TopicName
-              Value: !GetAtt ScalingTopic.TopicName
-          MetricName: NumberOfMessagesPublished
-          Namespace: AWS/SNS
-          Statistic: Maximum
-
-  
 
 
