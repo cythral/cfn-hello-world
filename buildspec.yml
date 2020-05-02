@@ -10,7 +10,7 @@ phases:
 
   build:
     commands:
-      - export IMAGE="$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - export IMAGE="$REPOSITORY_URI:$CODEBUILD_BUILD_NUMBER"
       - docker build -t $IMAGE .
       - docker push $IMAGE
       
