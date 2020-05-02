@@ -45,6 +45,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Ref AWS::StackName
+      ClusterSettings:
+        - Name: containerInsights
+          Value: disabled
       Tags:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
