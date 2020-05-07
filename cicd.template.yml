@@ -136,7 +136,7 @@ Resources:
                   "ArtifactsOverride": {
                     "Type": "S3",
                     "Location": "${ArtifactStore}",
-                    "Name": "/",
+                    "Name": "buildResults.zip",
                     "NamespaceType": "BUILD_ID",
                     "Packaging": "ZIP"
                   },
