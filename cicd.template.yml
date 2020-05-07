@@ -129,7 +129,7 @@ Resources:
           "States": {
             "Build": {
               "Type": "Task",
-              "Resource": "arn:aws:states:::codebuild:startBuild",
+              "Resource": "arn:aws:states:::codebuild:startBuild.sync",
               "Parameters": {
                   "ProjectName": "${BuildProject}",
                   "SourceVersion.$": "$.ref",
