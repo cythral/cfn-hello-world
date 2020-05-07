@@ -132,7 +132,7 @@ Resources:
               "Resource": "arn:aws:states:::codebuild:startBuild",
               "Parameters": {
                   "ProjectName": "${BuildProject}",
-                  "SourceVersion": "$.ref",
+                  "SourceVersion.$": "$.ref",
                   "ArtifactsOverride": {
                     "Type": "S3",
                     "Location": "${ArtifactStore}",
