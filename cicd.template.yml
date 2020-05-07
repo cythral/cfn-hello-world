@@ -138,6 +138,7 @@ Resources:
                     "Location": "${ArtifactStore}",
                     "Name": "/",
                     "NamespaceType": "BUILD_ID",
+                    "Packaging": "ZIP"
                   },
                   "SourceOverride": {
                     "Type": "GITHUB",
