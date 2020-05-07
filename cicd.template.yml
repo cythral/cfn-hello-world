@@ -140,11 +140,9 @@ Resources:
                     "NamespaceType": "BUILD_ID",
                     "Packaging": "ZIP"
                   },
-                  "SourceOverride": {
-                    "Type": "GITHUB",
-                    "Location": "https://github.com/${GithubOwner}/${GithubRepo}.git",
-                    "ReportBuildStatus": true
-                  }
+                  "SourceLocationOverride": "https://github.com/${GithubOwner}/${GithubRepo}.git",
+                  "SourceTypeOverride": "GITHUB",
+                  "ReportBuildStatusOverride": true
               },
               "End": true
             }
