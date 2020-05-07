@@ -89,6 +89,13 @@ Resources:
                 - !Ref AWS::AccountId
                 - !ImportValue cfn-metadata:DevAccountId
                 - !ImportValue cfn-metadata:ProdAccountId
+  
+  CodeBuildSourceCredential:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      Token: !Ref GithubToken
+      ServerType: GITHUB
+      AuthType: PERSONAL_ACCESS_TOKEN
 
   BuildProject:
     Type: AWS::CodeBuild::Project
@@ -109,7 +116,40 @@ Resources:
       Artifacts:
         Type: CODEPIPELINE
       Source:
-        Type: CODEPIPELINE
+        Type: CODEPIPELINE 
+
+  StateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      RoleArn: !ImportValue cfn-utilities:MasterRoleArn
+      StateMachineName: !Sub ${AWS::StackName}-pipeline
+      DefinitionString: !Sub |
+        {
+          "StartAt": "Build",
+          "States": {
+            "Build": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::codebuild:startBuild",
+              "Parameters": {
+                  "ProjectName": "${BuildProject}",
+                  "SourceVersion": "$.ref",
+                  "ArtifactsOverride": {
+                    "Type": "S3",
+                    "Location": "${ArtifactStore}",
+                    "Name": "/",
+                    "NamespaceType": "BUILD_ID",
+                    "PackagingType": "ZIP"
+                  },
+                  "SourceOverride": {
+                    "Type": "GITHUB",
+                    "Location": "https://github.com/${GithubOwner}/${GithubRepo}.git",
+                    "ReportBuildStatus": true
+                  }
+              },
+              "End": true
+            }
+          }
+        }
 
   Webhook:
     Type: AWS::CodePipeline::Webhook
