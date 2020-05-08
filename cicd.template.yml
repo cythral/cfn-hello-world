@@ -150,7 +150,7 @@ Resources:
                 },
                 "Next": "Deploy to Dev"
               },
-              
+             
               "Deploy to Dev": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
