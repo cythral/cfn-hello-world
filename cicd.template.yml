@@ -169,6 +169,7 @@ Resources:
               "Deploy to Dev": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+                "ResultPath": null,
                 "Parameters": {
                   "FunctionName": "cfn-core-StackDeploymentFunction-1BNK2X95I8WIZ",
                   "Payload": {
@@ -180,6 +181,23 @@ Resources:
                     "Token.$": "$$.Task.Token"
                   }
                 },
+                "Next": "Deploy to Prod"
+              },
+              "Deploy to Prod": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+                "ResultPath": null,
+                "Parameters": {
+                  "FunctionName": "cfn-core-StackDeploymentFunction-1BNK2X95I8WIZ",
+                  "Payload": {
+                    "StackName": "cfn-hello-world",
+                    "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
+                    "TemplateFileName": "hello-world.template.yml",
+                    "TemplateConfigurationFileName": "hello-world.prod.config.json",
+                    "RoleArn": "${ProdRoleArn}",
+                    "Token.$": "$$.Task.Token"
+                  }
+                },
                 "Next": "Success"
               },
               "Success": {
@@ -188,107 +206,4 @@ Resources:
             }
           }
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
-
-  Webhook:
-    Type: AWS::CodePipeline::Webhook 
-    Properties:
-      Authentication: GITHUB_HMAC
-      AuthenticationConfiguration:
-        SecretToken: !Ref GithubToken
-      Filters:
-        - JsonPath: $.ref
-          MatchEquals: "refs/heads/{Branch}"
-      TargetPipeline: !Ref Pipeline
-      TargetAction: Source
-      TargetPipelineVersion: !GetAtt Pipeline.Version
-      RegisterWithThirdParty: true
-
-  Pipeline:
-    Type: AWS::CodePipeline::Pipeline
-    Properties:
-      Name: !Sub ${AWS::StackName}-pipeline 
-      ArtifactStore:
-        Type: S3
-        Location: !Ref ArtifactStore
-        EncryptionKey: 
-          Id: !ImportValue cfn-utilities:ArtifactKeyArn
-          Type: KMS
-      RoleArn: !ImportValue cfn-utilities:MasterRoleArn
-      RestartExecutionOnUpdate: true
-      Stages:
-        - Name: Source
-          Actions:
-            - Name: Source
-              ActionTypeId:
-                Category: Source
-                Provider: GitHub
-                Owner: ThirdParty
-                Version: 1
-              OutputArtifacts:
-                - Name: sourceCode
-              Configuration:
-                Owner: !Ref GithubOwner
-                Repo: !Ref GithubRepo
-                Branch: !Ref GithubBranch
-                OAuthToken: !Ref GithubToken
-                PollForSourceChanges: false
-        - Name: Build
-          Actions:
-            - Name: Build
-              ActionTypeId:
-                Category: Build
-                Provider: CodeBuild
-                Owner: AWS
-                Version: 1
-              InputArtifacts:
-                - Name: sourceCode
-              OutputArtifacts:
-                - Name: buildResults
-              Configuration:
-                ProjectName: !Ref BuildProject
-        - Name: Dev
-          Actions:
-            - Name: Deploy
-              RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
-              ActionTypeId:
-                Category: Deploy
-                Provider: CloudFormation
-                Owner: AWS
-                Version: 1
-              InputArtifacts:
-                - Name: buildResults
-              Configuration:
-                StackName: cfn-hello-world
-                TemplatePath: buildResults::hello-world.template.yml
-                TemplateConfiguration: buildResults::hello-world.dev.config.json
-                ActionMode: CREATE_UPDATE
-                RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
-                Capabilities: CAPABILITY_IAM
-        - Name: Prod
-          Actions:
-            - Name: Approve
-              ActionTypeId: 
-                Category: Approval
-                Owner: AWS
-                Provider: Manual
-                Version: 1
-              InputArtifacts: []
-              OutputArtifacts: []
-              RunOrder: 1
-            - Name: Prod
-              RunOrder: 2
-              RoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
-              ActionTypeId:
-                Category: Deploy
-                Provider: CloudFormation
-                Owner: AWS
-                Version: 1
-              InputArtifacts:
-                - Name: buildResults
-              Configuration:
-                StackName: cfn-hello-world
-                TemplatePath: buildResults::hello-world.template.yml
-                TemplateConfiguration: buildResults::hello-world.prod.config.json
-                ActionMode: CREATE_UPDATE
-                RoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
-                Capabilities: CAPABILITY_IAM
+          ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
