@@ -20,7 +20,7 @@ Parameters:
 Resources:
   TestBucket:
     Type: AWS::S3::Bucket
-    
+     
   DevDnsRecords:
     Type: AWS::Route53::RecordSetGroup
     Properties:
