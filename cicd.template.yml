@@ -148,9 +148,24 @@ Resources:
                     "SourceTypeOverride": "GITHUB",
                     "ReportBuildStatusOverride": true
                 },
-                "Next": "Deploy to Dev"
+                "ResultPath": "$.BuildOutput"
+                "Next": "On Default Branch?"
               },
-             
+              "On Default Branch?": {
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.on_default_branch",
+                    "BooleanEquals": true,
+                    "Next": "Deploy to Dev"
+                  },
+                  {
+                    "Variable": "$.on_default_branch",
+                    "BooleanEquals": false,
+                    "End": true
+                  }
+                ]
+              },
               "Deploy to Dev": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
