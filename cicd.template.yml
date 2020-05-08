@@ -207,4 +207,3 @@ Resources:
           }
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
-          
