@@ -190,7 +190,7 @@ Resources:
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
 
   Webhook:
-    Type: AWS::CodePipeline::Webhook
+    Type: AWS::CodePipeline::Webhook 
     Properties:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
