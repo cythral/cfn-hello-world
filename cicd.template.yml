@@ -162,7 +162,7 @@ Resources:
                   {
                     "Variable": "$.on_default_branch",
                     "BooleanEquals": false,
-                    "End": true
+                    "Next": "Success"
                   }
                 ]
               },
@@ -180,7 +180,10 @@ Resources:
                     "Token.$": "$$.Task.Token"
                   }
                 },
-                "End": true
+                "Next": "Success"
+              },
+              "Success": {
+                "Type": "Succeed"
               }
             }
           }
