@@ -93,13 +93,6 @@ Resources:
                 - !ImportValue cfn-metadata:DevAccountId
                 - !ImportValue cfn-metadata:ProdAccountId
   
-  CodeBuildSourceCredential:
-    Type: AWS::CodeBuild::SourceCredential
-    Properties:
-      Token: !Ref GithubToken
-      ServerType: GITHUB
-      AuthType: PERSONAL_ACCESS_TOKEN
-
   BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
