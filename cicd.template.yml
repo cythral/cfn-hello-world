@@ -97,6 +97,7 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub ${AWS::StackName}-build
+      BadgeEnabled: true
       ServiceRole: !ImportValue cfn-utilities:BuilderRoleArn
       EncryptionKey: !ImportValue cfn-utilities:ArtifactKeyArn
       Environment:
@@ -110,9 +111,15 @@ Resources:
             Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${DockerRepo}
         Type: LINUX_CONTAINER
       Artifacts:
-        Type: CODEPIPELINE
+        Type: S3
+        Location: !Ref ArtifactStore
+        Name: buildResults.zip
+        NamespaceType: BUILD_ID
+        Packaging: ZIP
       Source:
-        Type: CODEPIPELINE 
+        Type: GITHUB
+        Location: !Sub https://github.com/${GithubOwner}/${GithubRepo}.git
+        ReportBuildStatus: true
 
   StateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -128,18 +135,8 @@ Resources:
                 "Type": "Task",
                 "Resource": "arn:aws:states:::codebuild:startBuild.sync",
                 "Parameters": {
-                    "ProjectName": "${BuildProject}",
-                    "SourceVersion.$": "$.head_commit.id",
-                    "ArtifactsOverride": {
-                      "Type": "S3",
-                      "Location": "${ArtifactStore}",
-                      "Name": "buildResults.zip",
-                      "NamespaceType": "BUILD_ID",
-                      "Packaging": "ZIP"
-                    },
-                    "SourceLocationOverride": "https://github.com/${GithubOwner}/${GithubRepo}.git",
-                    "SourceTypeOverride": "GITHUB",
-                    "ReportBuildStatusOverride": true
+                  "ProjectName": "${BuildProject}",
+                  "SourceVersion.$": "$.head_commit.id"
                 },
                 "ResultPath": "$.BuildOutput",
                 "Next": "On Default Branch?"
