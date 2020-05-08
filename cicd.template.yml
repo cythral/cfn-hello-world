@@ -148,7 +148,7 @@ Resources:
                     "SourceTypeOverride": "GITHUB",
                     "ReportBuildStatusOverride": true
                 },
-                "ResultPath": "$.BuildOutput"
+                "ResultPath": "$.BuildOutput",
                 "Next": "On Default Branch?"
               },
               "On Default Branch?": {
@@ -173,7 +173,7 @@ Resources:
                   "FunctionName": "cfn-core-StackDeploymentFunction-1BNK2X95I8WIZ",
                   "Payload": {
                     "StackName": "cfn-hello-world",
-                    "ZipLocation.$": "$.Build.Artifacts.Location",
+                    "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
                     "RoleArn": "${DevRoleArn}",
