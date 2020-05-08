@@ -17,7 +17,7 @@ Parameters:
     Type: String
     Description: Name of the github branch to track
 
-Resources:
+Resources: 
   TestBucket:
     Type: AWS::S3::Bucket
      
