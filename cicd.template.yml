@@ -126,31 +126,49 @@ Resources:
     Properties:
       RoleArn: !ImportValue cfn-utilities:MasterRoleArn
       StateMachineName: !Sub ${AWS::StackName}-pipeline
-      DefinitionString: !Sub |
-        {
-          "StartAt": "Build",
-          "States": {
-            "Build": {
-              "Type": "Task",
-              "Resource": "arn:aws:states:::codebuild:startBuild.sync",
-              "Parameters": {
-                  "ProjectName": "${BuildProject}",
-                  "SourceVersion.$": "$.ref",
-                  "ArtifactsOverride": {
-                    "Type": "S3",
-                    "Location": "${ArtifactStore}",
-                    "Name": "buildResults.zip",
-                    "NamespaceType": "BUILD_ID",
-                    "Packaging": "ZIP"
-                  },
-                  "SourceLocationOverride": "https://github.com/${GithubOwner}/${GithubRepo}.git",
-                  "SourceTypeOverride": "GITHUB",
-                  "ReportBuildStatusOverride": true
+      DefinitionString: !Sub 
+        - |
+          {
+            "StartAt": "Build",
+            "States": {
+              "Build": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::codebuild:startBuild.sync",
+                "Parameters": {
+                    "ProjectName": "${BuildProject}",
+                    "SourceVersion.$": "$.ref",
+                    "ArtifactsOverride": {
+                      "Type": "S3",
+                      "Location": "${ArtifactStore}",
+                      "Name": "buildResults.zip",
+                      "NamespaceType": "BUILD_ID",
+                      "Packaging": "ZIP"
+                    },
+                    "SourceLocationOverride": "https://github.com/${GithubOwner}/${GithubRepo}.git",
+                    "SourceTypeOverride": "GITHUB",
+                    "ReportBuildStatusOverride": true
+                },
+                "Next": "Deploy to Dev"
               },
-              "End": true
+              "Deploy to Dev": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+                "Parameters": {
+                  "FunctionName": "cfn-core-StackDeploymentFunction-1BNK2X95I8WIZ",
+                  "Payload": {
+                    "StackName": "cfn-hello-world",
+                    "ZipLocation.$": "$.Build.Artifacts.Location",
+                    "TemplateFileName": "hello-world.template.yml",
+                    "TemplateConfigurationFileName": "hello-world.dev.config.json",
+                    "RoleArn": "${DevRoleArn}",
+                    "Token.$": "$$.Task.Token"
+                  }
+                },
+                "End": true
+              }
             }
           }
-        }
+        - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
 
   Webhook:
     Type: AWS::CodePipeline::Webhook
