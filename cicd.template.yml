@@ -18,6 +18,9 @@ Parameters:
     Description: Name of the github branch to track
 
 Resources:
+  TestBucket:
+    Type: AWS::S3::Bucket
+    
   DevDnsRecords:
     Type: AWS::Route53::RecordSetGroup
     Properties:
