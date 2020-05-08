@@ -39,7 +39,7 @@ Resources:
 
   ProdDnsRecords:
     Type: AWS::Route53::RecordSetGroup
-    Properties:
+    Properties: 
       HostedZoneId: !ImportValue cfn-dns:HostedZoneId
       RecordSets: 
         - Name: hello-world.brigh.id
@@ -110,6 +110,10 @@ Resources:
           - Name: REPOSITORY_URI
             Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${DockerRepo}
         Type: LINUX_CONTAINER
+      Cache:
+        Type: LOCAL
+        Modes:
+          - LOCAL_DOCKER_LAYER_CACHE
       Artifacts:
         Type: S3
         Location: !Ref ArtifactStore
