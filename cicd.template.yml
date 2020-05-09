@@ -180,7 +180,7 @@ Resources:
               "Ask for Approval": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-                "Next": "Was Approved?"
+                "Next": "Was Approved?",
                 "ResultPath": "$.ApprovalDecision",
                 "Parameters": {
                   "FunctionArn": "${ApprovalNotificationFunction}",
