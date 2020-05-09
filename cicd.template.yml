@@ -232,4 +232,3 @@ Resources:
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           DeploymentFunction: !ImportValue cfn-core:StackDeploymentFunctionArn
           ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
-           
