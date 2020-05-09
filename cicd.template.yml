@@ -165,7 +165,7 @@ Resources:
                 "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
                 "ResultPath": null,
                 "Parameters": {
-                  "FunctionName": "cfn-core-StackDeploymentFunction-1BNK2X95I8WIZ",
+                  "FunctionName": "${DeploymentFunction}",
                   "Payload": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
@@ -182,7 +182,7 @@ Resources:
                 "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
                 "ResultPath": null,
                 "Parameters": {
-                  "FunctionName": "cfn-core-StackDeploymentFunction-1BNK2X95I8WIZ",
+                  "FunctionName": "${DeploymentFunction}",
                   "Payload": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
@@ -201,4 +201,5 @@ Resources:
           }
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
+          DeploymentFunction: !ImportValue cfn-core:StackDeploymentFunctionArn
           
