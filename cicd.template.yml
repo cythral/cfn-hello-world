@@ -130,76 +130,57 @@ Resources:
     Properties:
       RoleArn: !ImportValue cfn-utilities:MasterRoleArn
       StateMachineName: !Sub ${AWS::StackName}-pipeline
-      DefinitionString: !Sub 
-        - |
-          {
-            "StartAt": "Build",
-            "States": {
-              "Build": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::codebuild:startBuild.sync",
-                "Parameters": {
-                  "ProjectName": "${BuildProject}",
-                  "SourceVersion.$": "$.head_commit.id"
-                },
-                "ResultPath": "$.BuildOutput",
-                "Next": "On Default Branch?"
-              },
-              "On Default Branch?": {
-                "Type": "Choice",
-                "Choices": [
-                  {
-                    "Variable": "$.on_default_branch",
-                    "BooleanEquals": true,
-                    "Next": "Deploy to Dev"
-                  },
-                  {
-                    "Variable": "$.on_default_branch",
-                    "BooleanEquals": false,
-                    "Next": "Success"
-                  } 
-                ]
-              },
-              "Deploy to Dev": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-                "ResultPath": null,
-                "Parameters": {
-                  "FunctionName": "${DeploymentFunction}",
-                  "Payload": {
-                    "StackName": "cfn-hello-world",
-                    "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
-                    "TemplateFileName": "hello-world.template.yml",
-                    "TemplateConfigurationFileName": "hello-world.dev.config.json",
-                    "RoleArn": "${DevRoleArn}",
-                    "Token.$": "$$.Task.Token"
-                  }
-                },
-                "Next": "Deploy to Prod"
-              },
-              "Deploy to Prod": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
-                "ResultPath": null,
-                "Parameters": {
-                  "FunctionName": "${DeploymentFunction}",
-                  "Payload": {
-                    "StackName": "cfn-hello-world",
-                    "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
-                    "TemplateFileName": "hello-world.template.yml",
-                    "TemplateConfigurationFileName": "hello-world.prod.config.json",
-                    "RoleArn": "${ProdRoleArn}",
-                    "Token.$": "$$.Task.Token"
-                  }
-                },
-                "Next": "Success"
-              },
-              "Success": {
-                "Type": "Succeed"
-              }
-            }
-          }
-        - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
-          ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
-          DeploymentFunction: !ImportValue cfn-core:StackDeploymentFunctionArn
-           
+      DefinitionString:
+        StartAt: Build
+        States:
+          Build:
+            Type: Task
+            Resource: arn:aws:states:::codebuild:startBuild.sync
+            ResultPath: $.BuildOutput
+            Next: On Default Branch?
+            Parameters:
+              ProjectName: !Ref BuildProject
+              SourceVersion.$: $.head_commit.id
+
+          On Default Branch?:
+            Type: Choice
+            Choices:
+              - Variable: $.on_default_branch
+                BooleanEquals: true
+                Next: Deploy to Dev
+
+              - Variable: $.on_default_branch
+                BooleanEquals: false
+                Next: Success
+          
+          Deploy to Dev:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke.waitForTaskToken
+            ResultPath: null
+            Next: Deploy to Prod
+            Parameters:
+              FunctionName: !ImportValue cfn-core:StackDeploymentFunctionArn
+              Payload:
+                StackName: cfn-hello-world
+                ZipLocation.$: $.BuildOutput.Build.Artifacts.Location
+                TemplateFileName: hello-world.dev.config.json
+                RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
+                Token.$: $$.Task.Token
+
+          Deploy to Prod:
+            Type: Task
+            Resource: arn:aws:states:::lambda:invoke.waitForTaskToken
+            ResultPath: null
+            Next: Success
+            Parameters:
+              FunctionName: !ImportValue cfn-core:StackDeploymentFunctionArn
+              Payload:
+                StackName: cfn-hello-world
+                ZipLocation.$: $.BuildOutput.Build.Artifacts.Location
+                TemplateFileName: hello-world.prod.config.json
+                RoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
+                Token.$: $$.Task.Token
+
+          Success:
+            Type: Succeed
+            
