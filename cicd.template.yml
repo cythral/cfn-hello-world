@@ -183,7 +183,7 @@ Resources:
                 "Next": "Was Approved?",
                 "ResultPath": "$.ApprovalDecision",
                 "Parameters": {
-                  "FunctionArn": "${ApprovalNotificationFunction}",
+                  "FunctionName": "${ApprovalNotificationFunction}",
                   "Payload": {
                     "Pipeline": "${GithubRepo}",
                     "CustomMessage": "${GithubRepo} requires manual approval for deployment to production",
