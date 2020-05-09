@@ -157,7 +157,7 @@ Resources:
                     "Variable": "$.on_default_branch",
                     "BooleanEquals": false,
                     "Next": "Success"
-                  }
+                  } 
                 ]
               },
               "Deploy to Dev": {
