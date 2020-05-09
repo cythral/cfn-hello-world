@@ -175,7 +175,36 @@ Resources:
                     "Token.$": "$$.Task.Token"
                   }
                 },
-                "Next": "Deploy to Prod"
+                "Next": "Ask for Approval"
+              },
+              "Ask for Approval": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+                "Next": "Was Approved?"
+                "ResultPath": "$.ApprovalDecision",
+                "Parameters": {
+                  "FunctionArn": "${ApprovalNotificationFunction}",
+                  "Payload": {
+                    "Pipeline": "${GithubRepo}",
+                    "CustomMessage": "${GithubRepo} requires manual approval for deployment to production",
+                    "Token.$": "$$.Task.Token" 
+                  }
+                }
+              },
+              "Was Approved?": {
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.ApprovalDecision.Action",
+                    "StringEquals": "approve",
+                    "Next": "Deploy to Prod"
+                  },
+                  {
+                    "Variable": "$.ApprovalDecision.Action",
+                    "StringEquals": "reject",
+                    "Next": "Success"
+                  }
+                ]
               },
               "Deploy to Prod": {
                 "Type": "Task",
@@ -202,4 +231,5 @@ Resources:
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           DeploymentFunction: !ImportValue cfn-core:StackDeploymentFunctionArn
+          ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
            
