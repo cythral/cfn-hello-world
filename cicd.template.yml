@@ -201,6 +201,7 @@ Resources:
                   "FunctionName": "${ApprovalNotificationFunction}",
                   "Payload": {
                     "Pipeline": "${GithubRepo}",
+                    "ArtifactStore": "${ArtifactStore}",
                     "CustomMessage": "${GithubRepo} requires manual approval for deployment to production",
                     "Token.$": "$$.Task.Token" 
                   }
