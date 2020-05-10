@@ -199,7 +199,7 @@ Resources:
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
                     "RoleArn": "${DevRoleArn}",
-                    "Token.$": "$$.Task.Token",
+                    "Token.$": "$$.Task.Token"
                   }
                 },
                 "Next": "Ask for Approval"
