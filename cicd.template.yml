@@ -192,13 +192,14 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${DevDeployQueue}",
+                  "MessageGroupId": "cfn-hello-world-dev"
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
                     "RoleArn": "${DevRoleArn}",
-                    "Token.$": "$$.Task.Token"
+                    "Token.$": "$$.Task.Token",
                   }
                 },
                 "Next": "Ask for Approval"
@@ -238,6 +239,7 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${ProdDeployQueue}",
+                  "MessageGroupId": "cfn-hello-world-prod",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
