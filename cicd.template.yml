@@ -193,6 +193,7 @@ Resources:
                 "Parameters": {
                   "QueueUrl": "${DevDeployQueue}",
                   "MessageGroupId": "cfn-hello-world-dev",
+                  "MessageDeduplicationId.$": "$.head_commit.id",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
@@ -240,6 +241,7 @@ Resources:
                 "Parameters": {
                   "QueueUrl": "${ProdDeployQueue}",
                   "MessageGroupId": "cfn-hello-world-prod",
+                  "MessageDeduplicationId.$": "$.head_commit.id",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
@@ -259,5 +261,5 @@ Resources:
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
-          
+
   
