@@ -128,6 +128,7 @@ Resources:
   DeploymentQueue:
     Type: AWS::SQS::Queue
     Properties:
+      ContentBasedDeduplication: true
       VisibilityTimeout: 3600
       FifoQueue: true
       MessageRetentionPeriod: 1209600
@@ -180,7 +181,6 @@ Resources:
                 "Parameters": {
                   "QueueUrl": "${DeploymentQueue}",
                   "MessageGroupId": "cfn-hello-world",
-                  "MessageDeduplicationId.$": "$$.Task.Token",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
@@ -228,7 +228,6 @@ Resources:
                 "Parameters": {
                   "QueueUrl": "${DeploymentQueue}",
                   "MessageGroupId": "cfn-hello-world",
-                  "MessageDeduplicationId.$": "$.head_commit.id",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
