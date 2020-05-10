@@ -192,7 +192,7 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${DevDeployQueue}",
-                  "MessageGroupId": "cfn-hello-world-dev"
+                  "MessageGroupId": "cfn-hello-world-dev",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
