@@ -1,4 +1,9 @@
 version: 0.2
+env:
+  exported-variables:
+    - DEV_TOKEN
+    - PROD_TOKEN
+
 phases:
   install:
     runtime-versions:
@@ -16,6 +21,12 @@ phases:
       
       # Build config
       - deploy/create-config-files.sh $IMAGE
+  
+  post_build:
+    commands:
+      - export DEV_TOKEN=$CODEBUILD_RESOLVED_SOURCE_VERSION:dev
+      - export PROD_TOKEN=$CODEBUILD_RESOLVED_SOURCE_VERSION:prod
+      
 artifacts:
   discard-paths: yes
   files:

@@ -125,31 +125,18 @@ Resources:
         Location: !Sub https://github.com/${GithubOwner}/${GithubRepo}.git
         ReportBuildStatus: true
 
-  DevDeployQueue:
+  DeploymentQueue:
     Type: AWS::SQS::Queue
     Properties:
       VisibilityTimeout: 3600
       FifoQueue: true
       MessageRetentionPeriod: 1209600
 
-  DevDeployQueueEventSourceMapping:
+  DeploymentEventSourceMapping:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
       FunctionName: !ImportValue cfn-core:StackDeploymentFunctionArn
-      EventSourceArn: !GetAtt DevDeployQueue.Arn
-
-  ProdDeployQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      VisibilityTimeout: 3600
-      FifoQueue: true
-      MessageRetentionPeriod: 1209600
-  
-  ProdDeployQueueEventSourceMapping:
-    Type: AWS::Lambda::EventSourceMapping
-    Properties:
-      FunctionName: !ImportValue cfn-core:StackDeploymentFunctionArn
-      EventSourceArn: !GetAtt ProdDeployQueue.Arn
+      EventSourceArn: !GetAtt DeploymentQueue.Arn
 
   StateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -191,9 +178,9 @@ Resources:
                 "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
                 "ResultPath": null,
                 "Parameters": {
-                  "QueueUrl": "${DevDeployQueue}",
-                  "MessageGroupId": "cfn-hello-world-dev",
-                  "MessageDeduplicationId.$": "$.head_commit.id",
+                  "QueueUrl": "${DeploymentQueue}",
+                  "MessageGroupId": "cfn-hello-world",
+                  "MessageDeduplicationId.$": "$$.Task.Token",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
@@ -239,8 +226,8 @@ Resources:
                 "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
                 "ResultPath": null,
                 "Parameters": {
-                  "QueueUrl": "${ProdDeployQueue}",
-                  "MessageGroupId": "cfn-hello-world-prod",
+                  "QueueUrl": "${DeploymentQueue}",
+                  "MessageGroupId": "cfn-hello-world",
                   "MessageDeduplicationId.$": "$.head_commit.id",
                   "MessageBody": {
                     "StackName": "cfn-hello-world",
@@ -262,4 +249,3 @@ Resources:
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
 
-          
