@@ -125,6 +125,13 @@ Resources:
         Location: !Sub https://github.com/${GithubOwner}/${GithubRepo}.git
         ReportBuildStatus: true
 
+  DevDeployQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 3600
+      FifoQueue: true
+      MessageRetentionPeriod: 1209600      
+
   StateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
