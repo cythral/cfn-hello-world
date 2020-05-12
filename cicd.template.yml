@@ -125,6 +125,19 @@ Resources:
         Location: !Sub https://github.com/${GithubOwner}/${GithubRepo}.git
         ReportBuildStatus: true
 
+  SupersessionQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      ContentBasedDeduplication: true
+      FifoQueue: true
+      MessageRetentionPeriod: 1209600
+
+  SupersessionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      FunctionName: !ImportValue cfn-core:DeploymentSupersessionFunctionArn
+      EventSourceArn: !GetAtt SupersessionQueue.Arn
+
   DeploymentQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -165,13 +178,43 @@ Resources:
                   {
                     "Variable": "$.on_default_branch",
                     "BooleanEquals": true,
-                    "Next": "Deploy to Dev"
+                    "Next": "Check if Superseded"
                   },
                   {
                     "Variable": "$.on_default_branch",
                     "BooleanEquals": false,
                     "Next": "Success"
                   } 
+                ]
+              },
+              "Check if Superseded": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::sqs:sendMessage.waitForTaskToken",
+                "ResultPath": "$.SupersededOutput",
+                "Next": "Was Superseded?",
+                "Parameters": {
+                  "QueueUrl": "${SupersessionQueue}",
+                  "MessageGroupId": "cfn-hello-world",
+                  "MessageBody": {
+                    "Pipeline": "cfn-hello-world",
+                    "CommitTimestamp.$": "$.head_commit.timestamp",
+                    "Token.$": "$$.Task.Token"
+                  }
+                }
+              },
+              "Was Superseded?": {
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.SupersededOutput.Superseded",
+                    "BooleanEquals": true,
+                    "Next": "Success"
+                  },
+                  {
+                    "Variable": "$.SupersededOutput.Superseded",
+                    "BooleanEquals": false,
+                    "Next": "Deploy to Dev"
+                  }
                 ]
               },
               "Deploy to Dev": {
