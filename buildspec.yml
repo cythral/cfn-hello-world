@@ -20,4 +20,4 @@ artifacts:
   discard-paths: yes
   files:
     - "deploy/hello-world.template.yml"
-    - "hello-world.*.config.json"
+    - "hello-world.*.config.json" 
