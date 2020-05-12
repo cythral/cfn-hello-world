@@ -10,6 +10,7 @@ phases:
 
   build:
     commands:
+      - sleep 10
       - export IMAGE="$REPOSITORY_URI:$CODEBUILD_BUILD_NUMBER"
       - docker build -t $IMAGE .
       - docker push $IMAGE
