@@ -214,7 +214,7 @@ Resources:
                     "Variable": "$.SupersededOutput.Superseded",
                     "BooleanEquals": false,
                     "Next": "Deploy to Dev"
-                  } 
+                  }
                 ]
               },
               "Deploy to Dev": {
