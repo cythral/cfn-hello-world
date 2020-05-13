@@ -1,10 +1,5 @@
 Description: CICD pipeline for Hello World
 Parameters:
-  GithubToken:
-    Type: String
-    NoEcho: true
-    Description: OAuth token for the Github organization.  Needs read/write access to repos and repo hooks
-
   GithubOwner:
     Type: String
     Description: Owner of the github repository to track
@@ -13,14 +8,7 @@ Parameters:
     Type: String
     Description: Name of the github repository to track
 
-  GithubBranch:
-    Type: String
-    Description: Name of the github branch to track
-
 Resources: 
-  TestBucket:
-    Type: AWS::S3::Bucket
-     
   DevDnsRecords:
     Type: AWS::Route53::RecordSetGroup
     Properties:
