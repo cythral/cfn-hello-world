@@ -1,5 +1,10 @@
 Description: CICD pipeline for Hello World
 Parameters:
+  GithubToken:
+    Type: String
+    NoEcho: true
+    Description: OAuth token for the Github organization.  Needs read/write access to repos and repo hooks
+
   GithubOwner:
     Type: String
     Description: Owner of the github repository to track
@@ -7,6 +12,10 @@ Parameters:
   GithubRepo:
     Type: String
     Description: Name of the github repository to track
+
+  GithubBranch:
+    Type: String
+    Description: Name of the github branch to track
 
 Resources: 
   TestBucket:
@@ -185,9 +194,9 @@ Resources:
                 "Next": "Was Superseded?",
                 "Parameters": {
                   "QueueUrl": "${SupersessionQueue}",
-                  "MessageGroupId": "${GithubRepo}",
+                  "MessageGroupId": "cfn-hello-world",
                   "MessageBody": {
-                    "Pipeline": "${GithubRepo}",
+                    "Pipeline": "cfn-hello-world",
                     "CommitTimestamp.$": "$.head_commit.timestamp",
                     "Token.$": "$$.Task.Token"
                   }
@@ -214,9 +223,9 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${DeploymentQueue}",
-                  "MessageGroupId": "${GithubRepo}",
+                  "MessageGroupId": "cfn-hello-world",
                   "MessageBody": {
-                    "StackName": "${GithubRepo}",
+                    "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
@@ -262,9 +271,9 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${DeploymentQueue}",
-                  "MessageGroupId": "${GithubRepo}",
+                  "MessageGroupId": "cfn-hello-world",
                   "MessageBody": {
-                    "StackName": "${GithubRepo}",
+                    "StackName": "cfn-hello-world",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.prod.config.json",
