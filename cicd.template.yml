@@ -227,7 +227,10 @@ Resources:
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
                     "RoleArn": "${DevRoleArn}",
-                    "Token.$": "$$.Task.Token"
+                    "Token.$": "$$.Task.Token",
+                    "Capabilities": [
+                      "CAPABILITY_IAM"
+                    ]
                   }
                 },
                 "Next": "Ask for Approval"
@@ -275,7 +278,10 @@ Resources:
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.prod.config.json",
                     "RoleArn": "${ProdRoleArn}",
-                    "Token.$": "$$.Task.Token"
+                    "Token.$": "$$.Task.Token",
+                    "Capabilities": [
+                      "CAPABILITY_IAM"
+                    ]
                   }
                 },
                 "Next": "Success"
