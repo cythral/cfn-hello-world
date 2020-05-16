@@ -232,6 +232,8 @@ Resources:
                     "GithubOwner": "cythral",
                     "GithubRepository": "${GithubRepo}",
                     "GithubRef.$": "$.head_commit.id",
+                    "GoogleClientId": "${DevGoogleClientId}",
+                    "IdentityPoolId": "${DevIdentityPoolId}",
                     "Capabilities": [
                       "CAPABILITY_IAM"
                     ]
@@ -287,6 +289,8 @@ Resources:
                     "GithubOwner": "cythral",
                     "GithubRepository": "${GithubRepo}",
                     "GithubRef.$": "$.head_commit.id",
+                    "GoogleClientId": "${ProdGoogleClientId}",
+                    "IdentityPoolId": "${ProdIdentityPoolId}",
                     "Capabilities": [
                       "CAPABILITY_IAM"
                     ]
@@ -302,4 +306,8 @@ Resources:
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
+          DevGoogleClientId: !ImportValue aws-sso-registry:DevGoogleClientId
+          DevIdentityPoolId: !ImportValue aws-sso-registry:DevIdentityPoolId
+          ProdGoogleClientId: !ImportValue aws-sso-registry:ProdGoogleClientId
+          ProdIdentityPoolId: !ImportValue aws-sso-registry:ProdIdentityPoolId
      
