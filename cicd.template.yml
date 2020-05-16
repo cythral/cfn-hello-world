@@ -306,8 +306,8 @@ Resources:
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
-          DevGoogleClientId: !ImportValue aws-sso-registry:DevGoogleClientId
-          DevIdentityPoolId: !ImportValue aws-sso-registry:DevIdentityPoolId
-          ProdGoogleClientId: !ImportValue aws-sso-registry:ProdGoogleClientId
-          ProdIdentityPoolId: !ImportValue aws-sso-registry:ProdIdentityPoolId
+          DevGoogleClientId: !ImportValue sso-aws-registry:DevGoogleClientId
+          DevIdentityPoolId: !ImportValue sso-aws-registry:DevIdentityPoolId
+          ProdGoogleClientId: !ImportValue sso-aws-registry:ProdGoogleClientId
+          ProdIdentityPoolId: !ImportValue sso-aws-registry:ProdIdentityPoolId
      
