@@ -228,6 +228,10 @@ Resources:
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
                     "RoleArn": "${DevRoleArn}",
                     "Token.$": "$$.Task.Token",
+                    "EnvironmentName": "dev",
+                    "GithubOwner": "cythral",
+                    "GithubRepository": "${GithubRepo}",
+                    "GithubRef.$": "$.head_commit.id",
                     "Capabilities": [
                       "CAPABILITY_IAM"
                     ]
@@ -279,6 +283,10 @@ Resources:
                     "TemplateConfigurationFileName": "hello-world.prod.config.json",
                     "RoleArn": "${ProdRoleArn}",
                     "Token.$": "$$.Task.Token",
+                    "EnvironmentName": "prod",
+                    "GithubOwner": "cythral",
+                    "GithubRepository": "${GithubRepo}",
+                    "GithubRef.$": "$.head_commit.id",
                     "Capabilities": [
                       "CAPABILITY_IAM"
                     ]
