@@ -310,4 +310,4 @@ Resources:
           DevIdentityPoolId: !ImportValue sso-aws-registry:DevIdentityPoolId
           ProdGoogleClientId: !ImportValue sso-aws-registry:ProdGoogleClientId
           ProdIdentityPoolId: !ImportValue sso-aws-registry:ProdIdentityPoolId
-        
+         
