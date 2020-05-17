@@ -220,23 +220,25 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${DeploymentQueue}",
-                  "MessageGroupId": "cfn-hello-world",
+                  "MessageGroupId": "${GithubRepo}-dev",
                   "MessageBody": {
-                    "StackName": "cfn-hello-world",
+                    "StackName": "${GithubRepo}",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.dev.config.json",
+                    "Capabilities": ["CAPABILITY_IAM"],
                     "RoleArn": "${DevRoleArn}",
                     "Token.$": "$$.Task.Token",
                     "EnvironmentName": "dev",
-                    "GithubOwner": "cythral",
-                    "GithubRepository": "${GithubRepo}",
-                    "GithubRef.$": "$.head_commit.id",
-                    "GoogleClientId": "${DevGoogleClientId}",
-                    "IdentityPoolId": "${DevIdentityPoolId}",
-                    "Capabilities": [
-                      "CAPABILITY_IAM"
-                    ]
+                    "CommitInfo": {
+                      "GithubOwner": "${GithubOwner}",
+                      "GithubRepository": "${GithubRepo}",
+                      "GithubRef.$": "$.head_commit.id"
+                    },
+                    "SsoConfig": {
+                      "GoogleClientId": "${DevGoogleClientId}",
+                      "IdentityPoolId": "${DevIdentityPoolId}"
+                    }
                   }
                 },
                 "Next": "Ask for Approval"
@@ -277,23 +279,25 @@ Resources:
                 "ResultPath": null,
                 "Parameters": {
                   "QueueUrl": "${DeploymentQueue}",
-                  "MessageGroupId": "cfn-hello-world",
+                  "MessageGroupId": "${GithubRepo}-prod",
                   "MessageBody": {
-                    "StackName": "cfn-hello-world",
+                    "StackName": "${GithubRepo}",
                     "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
                     "TemplateFileName": "hello-world.template.yml",
                     "TemplateConfigurationFileName": "hello-world.prod.config.json",
+                    "Capabilities": ["CAPABILITY_IAM"],
                     "RoleArn": "${ProdRoleArn}",
                     "Token.$": "$$.Task.Token",
                     "EnvironmentName": "prod",
-                    "GithubOwner": "cythral",
-                    "GithubRepository": "${GithubRepo}",
-                    "GithubRef.$": "$.head_commit.id",
-                    "GoogleClientId": "${ProdGoogleClientId}",
-                    "IdentityPoolId": "${ProdIdentityPoolId}",
-                    "Capabilities": [
-                      "CAPABILITY_IAM"
-                    ]
+                    "CommitInfo": {
+                      "GithubOwner": "${GithubOwner}",
+                      "GithubRepository": "${GithubRepo}",
+                      "GithubRef.$": "$.head_commit.id"
+                    },
+                    "SsoConfig": {
+                      "GoogleClientId": "${ProdGoogleClientId}",
+                      "IdentityPoolId": "${ProdIdentityPoolId}"
+                    }
                   }
                 },
                 "Next": "Success" 
