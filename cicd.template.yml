@@ -236,10 +236,6 @@ Resources:
                       "GithubOwner": "${GithubOwner}",
                       "GithubRepository": "${GithubRepo}",
                       "GithubRef.$": "$.head_commit.id"
-                    },
-                    "SsoConfig": {
-                      "GoogleClientId": "${DevGoogleClientId}",
-                      "IdentityPoolId": "${DevIdentityPoolId}"
                     }
                   }
                 },
@@ -295,10 +291,6 @@ Resources:
                       "GithubOwner": "${GithubOwner}",
                       "GithubRepository": "${GithubRepo}",
                       "GithubRef.$": "$.head_commit.id"
-                    },
-                    "SsoConfig": {
-                      "GoogleClientId": "${ProdGoogleClientId}",
-                      "IdentityPoolId": "${ProdIdentityPoolId}"
                     }
                   }
                 },
@@ -312,8 +304,4 @@ Resources:
         - DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
           ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
           ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
-          DevGoogleClientId: !ImportValue sso-aws-registry:DevGoogleClientId
-          DevIdentityPoolId: !ImportValue sso-aws-registry:DevIdentityPoolId
-          ProdGoogleClientId: !ImportValue sso-aws-registry:ProdGoogleClientId
-          ProdIdentityPoolId: !ImportValue sso-aws-registry:ProdIdentityPoolId
                 
