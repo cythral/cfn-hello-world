@@ -168,6 +168,12 @@ Resources:
         Bucket: !Ref PipelineDefinitionBucket
         Key: !Ref PipelineDefinitionKey
       DefinitionSubstitutions:
+        GithubRepo: !Ref GithubRepo
+        GithubOwner: !Ref GithubOwner
+        ArtifactStore: !Ref ArtifactStore
+        BuildProject: !Ref BuildProject
+        DeploymentQueue: !Ref DeploymentQueue
+        SupersessionQueue: !Ref SupersessionQueue
         DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
         ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
         ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
