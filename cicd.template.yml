@@ -176,7 +176,7 @@ Resources:
         SupersessionQueue: !Ref SupersessionQueue
         DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
         ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
-        ApprovalNotificationFunction: cfn-core-ApprovalNotificationFunction-14V53I9N6Z2YZ
+        ApprovalNotificationFunction: !ImportValue cfn-core:ApprovalNotificationFunctionArn
     Metadata:
       cfn-lint:
         config:
