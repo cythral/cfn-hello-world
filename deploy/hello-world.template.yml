@@ -52,6 +52,7 @@ Resources:
         - FARGATE_SPOT
       DefaultCapacityProviderStrategy:
         - CapacityProvider: FARGATE_SPOT
+          Weight: 1
       Tags:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
@@ -60,6 +61,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref Cluster
+      LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets: !Split
