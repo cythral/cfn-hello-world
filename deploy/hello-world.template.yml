@@ -11,8 +11,8 @@ Parameters:
   EnableServiceStopping:
     Type: String
     AllowedValues:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     Description: Whether or not to enable service stopping on the cluster
 
 Resources:
@@ -39,7 +39,7 @@ Resources:
       Port: 80
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
-          Value: '30'
+          Value: "30"
 
   Cluster:
     Type: AWS::ECS::Cluster
@@ -48,6 +48,8 @@ Resources:
       ClusterSettings:
         - Name: containerInsights
           Value: disabled
+      CapacityProviders:
+        - FARGATE_SPOT
       Tags:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
@@ -116,6 +118,3 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 14
-
-
-
