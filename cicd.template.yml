@@ -28,9 +28,6 @@ Parameters:
     Description: Key name where the pipeline definition is located
 
 Resources:
-  TestBucket:
-    Type: AWS::S3::Bucket
-
   DevDnsRecords:
     Type: AWS::Route53::RecordSetGroup
     Properties:
