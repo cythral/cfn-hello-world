@@ -121,12 +121,12 @@ Resources:
     Properties:
       RetentionInDays: 14
 
-  # TestApplication:
-  #   Type: Custom::Application
-  #   Properties:
-  #     ServiceToken: !ImportValue identity:ApplicationTopicArn
-  #     Name: cfn-hello-world
-# 
-# Outputs:
-#   TestApplicationClientSecret:
-#     Value: !GetAtt TestApplication.ClientSecret
+  TestApplication:
+    Type: Custom::Application
+    Properties:
+      ServiceToken: !ImportValue identity:ApplicationTopicArn
+      Name: cfn-hello-world
+
+Outputs:
+  TestApplicationClientSecret:
+    Value: !GetAtt TestApplication.ClientSecret
