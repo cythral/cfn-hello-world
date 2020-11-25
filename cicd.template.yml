@@ -135,7 +135,7 @@ Resources:
         Location: !Sub https://github.com/${GithubOwner}/${GithubRepo}.git
         ReportBuildStatus: true
         BuildStatusConfig:
-          TargetUrl: !Sub https://sso.brigh.id/start/shared?destination=https://console.aws.amazon.com/codesuite/codebuild/580493967798/projects/${AWS::StackName}-build/build/${AWS::StackName}%3A$CODEBUILD_BUILD_ID/
+          TargetUrl: !Sub https://sso.brigh.id/start/shared?destination=https://console.aws.amazon.com/codesuite/codebuild/${AWS::AccountId}/projects/${AWS::StackName}-build/build/$CODEBUILD_BUILD_ID/?region=${AWS::Region}
 
   SupersessionQueue:
     Type: AWS::SQS::Queue
