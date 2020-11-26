@@ -16,4 +16,5 @@ Then to run it, do:
 docker run --rm -it -p 80:80 cfn-hello-world
 ```
 
+
 Visit http://localhost and you should see "Hello World" display in your browser!
