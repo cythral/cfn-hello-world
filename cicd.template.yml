@@ -46,14 +46,22 @@ Resources:
       DestinationName: !Sub ${GithubRepo}-dev
       RoleArn: !GetAtt LogsDeliveryRole.Arn
       TargetArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:${DevLogStream}
-      DestinationPolicy:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: logs:PutSubscriptionFilter
-            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:${GithubRepo}-dev
-            Principal:
-              AWS: !ImportValue cfn-metadata:DevAccountId
+      DestinationPolicy: !Sub
+        - |
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": "logs:PutSubscriptionFilter",
+                "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:${GithubRepo}-dev",
+                "Principal": {
+                  "AWS": "${DevAccountId}"
+                }
+              }
+            ]
+          }
+        - DevAccountId: !ImportValue cfn-metadata:DevAccountId
 
   ProdLogStream:
     Type: AWS::Logs::LogStream
@@ -67,14 +75,22 @@ Resources:
       DestinationName: !Sub ${GithubRepo}-prod
       RoleArn: !GetAtt LogsDeliveryRole.Arn
       TargetArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:${ProdLogStream}
-      DestinationPolicy:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: logs:PutSubscriptionFilter
-            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:${GithubRepo}-prod
-            Principal:
-              AWS: !ImportValue cfn-metadata:ProdAccountId
+      DestinationPolicy: !Sub 
+        - |
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": "logs:PutSubscriptionFilter",
+                "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:${GithubRepo}-prod",
+                "Principal": {
+                  "AWS": "${ProdAccountId}"
+                }
+              }
+            ]
+          }
+        - ProdAccountId: !ImportValue cfn-metadata:ProdAccountId
 
   LogsDeliveryRole:
     Type: AWS::IAM::Role
