@@ -28,8 +28,78 @@ Parameters:
     Description: Key name where the pipeline definition is located
 
 Resources:
-  TestBucket:
-    Type: AWS::S3::Bucket
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref GithubRepo
+      RetentionInDays: 14
+
+  DevLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref LogGroup
+      LogStreamName: dev
+
+  DevLogDestination:
+    Type: AWS::Logs::Destination
+    Properties:
+      DestinationName: !Sub ${GithubRepo}-dev
+      RoleArn: !GetAtt LogsDeliveryRole.Arn
+      TargetArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:${DevLogStream}
+      DestinationPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: logs:PutSubscriptionFilter
+            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:${GithubRepo}-dev
+            Principal:
+              AWS: !ImportValue cfn-metadata:DevAccountId
+
+  ProdLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref LogGroup
+      LogStreamName: prod
+
+  ProdLogDestination:
+    Type: AWS::Logs::Destination
+    Properties:
+      DestinationName: !Sub ${GithubRepo}-prod
+      RoleArn: !GetAtt LogsDeliveryRole.Arn
+      TargetArn: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:${ProdLogStream}
+      DestinationPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: logs:PutSubscriptionFilter
+            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:${GithubRepo}-prod
+            Principal:
+              AWS: !ImportValue cfn-metadata:ProdAccountId
+
+  LogsDeliveryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: !Sub logs.${AWS::Region}.amazonaws.com
+  
+  LogsDeliveryPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Roles:
+        - !Ref LogsDeliveryRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: logs:PutLogEvents
+            Resource:
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:${DevLogStream}
+              - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}:${ProdLogStream}
 
   DevDnsRecords:
     Type: AWS::Route53::RecordSetGroup
