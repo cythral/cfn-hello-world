@@ -176,3 +176,22 @@ Resources:
                 ProjectName: !Ref BuildProject
               InputArtifacts:
                 - Name: SourceCode
+              OutputArtifacts:
+                - Name: BuildResults
+
+        - Name: Deploy to Dev
+          Actions:
+            - Name: Deploy
+              RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                StackName: !Ref GithubRepo
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_IAM
+                RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
+                TemplatePath: !Sub BuildResults::${GithubRepo}.template.yml
+                TemplateConfiguration: !Sub BuildResults::${GithubRepo}.dev.config.json
