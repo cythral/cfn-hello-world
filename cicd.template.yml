@@ -138,6 +138,7 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
+      Name: !Sub ${AWS::StackName}-pipeline
       RestartExecutionOnUpdate: true
       RoleArn: !ImportValue cfn-utilities:MasterRoleArn
       ArtifactStore:
