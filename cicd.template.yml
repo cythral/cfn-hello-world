@@ -195,3 +195,5 @@ Resources:
                 RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
                 TemplatePath: !Sub BuildResults::${GithubRepo}.template.yml
                 TemplateConfiguration: !Sub BuildResults::${GithubRepo}.dev.config.json
+              InputArtifacts:
+                - Name: BuildResults
