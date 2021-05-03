@@ -156,7 +156,7 @@ Resources:
                 Provider: CodeStarSourceConnection
                 Version: 1
               Configuration:
-                ConnectionArn: !ImportValue cfn-utilities:CodeStarConnectionArn
+                ConnectionArn: !ImportValue cfn-core:CodeStarConnectionArn
                 FullRepositoryId: !Sub ${GithubOwner}/${GithubRepo}
                 BranchName: !Ref GithubBranch
                 OutputArtifactFormat: CODEBUILD_CLONE_REF
