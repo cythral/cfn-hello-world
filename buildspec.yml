@@ -20,6 +20,6 @@ phases:
 artifacts:
   discard-paths: yes
   files:
-    - "deploy/hello-world.template.yml"
-    - "hello-world.*.config.json"
+    - "deploy/cfn-hello-world.template.yml"
+    - "cfn-hello-world.*.config.json"
     

@@ -9,5 +9,5 @@ for file in $(ls ${cwd}/params/*.json); do
     
     config={}
     config=$(echo $config | jq --argjson params "$params" '.Parameters=$params')
-    echo $config > hello-world.${envName}.config.json
+    echo $config > cfn-hello-world.${envName}.config.json
 done
