@@ -179,7 +179,7 @@ Resources:
               OutputArtifacts:
                 - Name: BuildResults
 
-        - Name: Deploy to Dev
+        - Name: Dev
           Actions:
             - Name: Deploy
               RoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
