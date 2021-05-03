@@ -16,7 +16,7 @@ Parameters:
 
   GithubBranch:
     Type: String
-    Default: ""
+    Default: "master"
     Description: Name of the github branch to track
 
   PipelineDefinitionBucket:
@@ -135,54 +135,43 @@ Resources:
           Context: !Sub AWS CodeBuild - shared (${AWS::StackName}-build)
           TargetUrl: !Sub https://sso.brigh.id/start/shared?destination=https://console.aws.amazon.com/codesuite/codebuild/${AWS::AccountId}/projects/${AWS::StackName}-build/build/$CODEBUILD_BUILD_ID/?region=${AWS::Region}
 
-  SupersessionQueue:
-    Type: AWS::SQS::Queue
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
     Properties:
-      ContentBasedDeduplication: true
-      FifoQueue: true
-      MessageRetentionPeriod: 1209600
-
-  SupersessionEventSourceMapping:
-    Type: AWS::Lambda::EventSourceMapping
-    Properties:
-      FunctionName: !ImportValue cfn-core:DeploymentSupersessionFunctionArn
-      EventSourceArn: !GetAtt SupersessionQueue.Arn
-
-  DeploymentQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      ContentBasedDeduplication: true
-      VisibilityTimeout: 3600
-      FifoQueue: true
-      MessageRetentionPeriod: 1209600
-
-  DeploymentEventSourceMapping:
-    Type: AWS::Lambda::EventSourceMapping
-    Properties:
-      FunctionName: !ImportValue cfn-core:StackDeploymentFunctionArn
-      EventSourceArn: !GetAtt DeploymentQueue.Arn
-
-  StateMachine:
-    Type: AWS::StepFunctions::StateMachine
-    Properties:
+      RestartExecutionOnUpdate: true
       RoleArn: !ImportValue cfn-utilities:MasterRoleArn
-      StateMachineName: !Sub ${AWS::StackName}-pipeline
-      DefinitionS3Location:
-        Bucket: !Ref PipelineDefinitionBucket
-        Key: !Ref PipelineDefinitionKey
-      DefinitionSubstitutions:
-        GithubRepo: !Ref GithubRepo
-        GithubOwner: !Ref GithubOwner
-        ArtifactStore: !Ref ArtifactStore
-        BuildProject: !Ref BuildProject
-        DeploymentQueue: !Ref DeploymentQueue
-        SupersessionQueue: !Ref SupersessionQueue
-        DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
-        ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
-        ApprovalNotificationFunction: !ImportValue cfn-core:ApprovalNotificationFunctionArn
-    Metadata:
-      cfn-lint:
-        config:
-          ignore_checks:
-            - E3002
-            - E3003
+      ArtifactStore:
+        EncryptionKey: 
+          Id: !ImportValue cfn-utilities:ArtifactKeyArn
+          Type: KMS
+        Location: !Ref ArtifactStore
+        Type: S3
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: 1
+              Configuration:
+                ConnectionArn: !ImportValue cfn-utilities:CodeStarConnectionArn
+                FullRepositoryId: !Sub ${GithubOwner}/${GithubRepo}
+                BranchName: !Ref GithubBranch
+                OutputArtifactFormat: CODEBUILD_CLONE_REF
+              OutputArtifacts:
+                - Name: SourceCode
+        
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              Configuration:
+                ProjectName: !Ref BuildProject
+              InputArtifacts:
+                - Name: SourceCode
