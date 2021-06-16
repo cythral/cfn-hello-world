@@ -15,20 +15,83 @@ Parameters:
       - "false"
     Description: Whether or not to enable service stopping on the cluster
 
+  EnvoyImage:
+    Type: String
+    Description: Image to use for the Envoy Sidecar.
+
+  MeshNodeName:
+    Type: String
+    Description: Name to use for the node in the App Mesh.
+
 Resources:
-  ListenerRule:
-    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+  MeshService:
+    Type: AWS::AppMesh::VirtualService
     Properties:
-      ListenerArn: !ImportValue cfn-utilities:HttpListenerArn
-      Priority: 2
-      Actions:
-        - Type: forward
-          TargetGroupArn: !Ref TargetGroup
-      Conditions:
-        - Field: host-header
-          HostHeaderConfig:
-            Values:
-              - !Ref DomainName
+      MeshName: brighid-mesh
+      MeshOwner: !ImportValue cfn-metadata:SharedAccountId
+      VirtualServiceName: !Ref DomainName
+      Spec:
+        Provider:
+          VirtualNode:
+            VirtualNodeName: !GetAtt MeshNode.VirtualNodeName
+
+  MeshNode:
+    Type: AWS::AppMesh::VirtualNode
+    Properties:
+      MeshName: brighid-mesh
+      MeshOwner: !ImportValue cfn-metadata:SharedAccountId
+      VirtualNodeName: !Ref MeshNodeName
+      Spec:
+        Listeners:
+          - PortMapping:
+              Port: 80
+              Protocol: http
+            HealthCheck:
+              UnhealthyThreshold: 3
+              HealthyThreshold: 5
+              TimeoutMillis: 30000
+              Path: /healthcheck
+              Protocol: http
+              IntervalMillis: 30000
+        ServiceDiscovery:
+          AWSCloudMap:
+            NamespaceName: !ImportValue brighid-infrastructure:ServiceRegistryName
+            ServiceName: hello-world
+
+  MeshGatewayRoute:
+    Type: Custom::MeshGatewayRoute
+    Properties:
+      ServiceToken: !ImportValue cfn-gateway-route-resource:GatewayRouteLambdaArn
+      MeshName: brighid-mesh
+      MeshOwner: !ImportValue cfn-metadata:SharedAccountId
+      VirtualGatewayName: internet
+      GatewayRouteName: !Ref MeshNodeName
+      Spec:
+        HttpRoute:
+          Action:
+            Target:
+              VirtualService:
+                VirtualServiceName: !GetAtt MeshService.VirtualServiceName
+          Match:
+            Prefix: /
+            Hostname:
+              Exact: !Ref DomainName
+
+  ServiceRegistryRecord:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Description: Service Registry Record for Brighid Hello World
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      NamespaceId: !ImportValue brighid-infrastructure:ServiceRegistry
+      Name: hello-world
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -68,6 +131,7 @@ Resources:
             - !ImportValue cfn-utilities:SubnetIds
           SecurityGroups:
             - !ImportValue cfn-utilities:WebSecurityGroupId
+            - !ImportValue cfn-utilities:EnvoySecurityGroupId
           AssignPublicIp: ENABLED
       LoadBalancers:
         - ContainerName: hello-world
@@ -89,10 +153,27 @@ Resources:
       TaskRoleArn: !GetAtt TaskRole.Arn
       RequiresCompatibilities:
         - FARGATE
+      ProxyConfiguration:
+        Type: APPMESH
+        ContainerName: envoy
+        ProxyConfigurationProperties:
+          - Name: IgnoredUID
+            Value: "1337"
+          - Name: ProxyIngressPort
+            Value: "15000"
+          - Name: ProxyEgressPort
+            Value: "15001"
+          - Name: AppPorts
+            Value: "80"
+          - Name: EgressIgnoredIPs
+            Value: 169.254.170.2,169.254.169.254
       ContainerDefinitions:
         - Name: hello-world
           Essential: true
           Image: !Ref Image
+          DependsOn:
+            - ContainerName: envoy
+              Condition: HEALTHY
           PortMappings:
             - ContainerPort: 80
           LogConfiguration:
@@ -100,13 +181,44 @@ Resources:
             Options:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref AWS::Region
-              awslogs-stream-prefix: !Ref AWS::StackName
+              awslogs-stream-prefix: brighid
+        - Name: envoy
+          Image: !Ref EnvoyImage
+          Essential: true
+          User: "1337"
+          Ulimits:
+            - Name: "nofile"
+              HardLimit: 15000
+              SoftLimit: 15000
+          PortMappings:
+            - ContainerPort: 9901
+            - ContainerPort: 15000
+            - ContainerPort: 15001
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - curl -s http://localhost:9901/server_info | grep state | grep -q LIVE
+            Interval: 5
+            Timeout: 2
+            Retries: 3
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: brighid
+          Environment:
+            - Name: APPMESH_RESOURCE_ARN
+              Value: !Sub
+                - mesh/brighid-mesh@${SharedAccountId}/virtualNode/${MeshNode.VirtualNodeName}
+                - SharedAccountId: !ImportValue cfn-metadata:SharedAccountId
 
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -119,4 +231,5 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
+      LogGroupName: /brighid/hello-world
       RetentionInDays: 14

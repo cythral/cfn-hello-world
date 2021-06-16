@@ -1,4 +1,6 @@
 {
-    "DomainName": "hello-world.brigh.id",
-    "EnableServiceStopping": "false"
+  "DomainName": "hello-world.brigh.id",
+  "EnableServiceStopping": "false",
+  "EnvoyImage": "840364872350.dkr.ecr.us-east-1.amazonaws.com/aws-appmesh-envoy:v1.17.2.0-prod",
+  "MeshNodeName": "hello-world-prod"
 }
