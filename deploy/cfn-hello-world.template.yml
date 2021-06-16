@@ -45,7 +45,7 @@ Resources:
         Listeners:
           - PortMapping:
               Port: 80
-              Protocol: http2
+              Protocol: http
             HealthCheck:
               UnhealthyThreshold: 3
               HealthyThreshold: 5
@@ -67,7 +67,7 @@ Resources:
       VirtualGatewayName: internet
       GatewayRouteName: !Ref MeshNodeName
       Spec:
-        HttpRoute:
+        Http2Route:
           Action:
             Target:
               VirtualService:
