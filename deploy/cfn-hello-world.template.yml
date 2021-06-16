@@ -122,6 +122,9 @@ Resources:
             - !ImportValue cfn-utilities:WebSecurityGroupId
             - !ImportValue cfn-utilities:EnvoySecurityGroupId
           AssignPublicIp: ENABLED
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceRegistryRecord.Arn
+          Port: 80
       TaskDefinition: !Ref TaskDefinition
       DesiredCount: 1
       DeploymentConfiguration:
