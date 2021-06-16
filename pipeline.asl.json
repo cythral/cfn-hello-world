@@ -66,8 +66,8 @@
         "MessageBody": {
           "StackName": "${GithubRepo}",
           "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
-          "TemplateFileName": "hello-world.template.yml",
-          "TemplateConfigurationFileName": "hello-world.dev.config.json",
+          "TemplateFileName": "cfn-hello-world.template.yml",
+          "TemplateConfigurationFileName": "cfn-hello-world.dev.config.json",
           "Capabilities": ["CAPABILITY_IAM"],
           "RoleArn": "${DevRoleArn}",
           "Token.$": "$$.Task.Token",
@@ -121,8 +121,8 @@
         "MessageBody": {
           "StackName": "${GithubRepo}",
           "ZipLocation.$": "$.BuildOutput.Build.Artifacts.Location",
-          "TemplateFileName": "hello-world.template.yml",
-          "TemplateConfigurationFileName": "hello-world.prod.config.json",
+          "TemplateFileName": "cfn-hello-world.template.yml",
+          "TemplateConfigurationFileName": "cfn-hello-world.prod.config.json",
           "Capabilities": ["CAPABILITY_IAM"],
           "RoleArn": "${ProdRoleArn}",
           "Token.$": "$$.Task.Token",
