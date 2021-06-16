@@ -93,17 +93,6 @@ Resources:
       NamespaceId: !ImportValue brighid-infrastructure:ServiceRegistry
       Name: hello-world
 
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      TargetType: ip
-      VpcId: !ImportValue cfn-utilities:VpcId
-      Protocol: HTTP
-      Port: 80
-      TargetGroupAttributes:
-        - Key: deregistration_delay.timeout_seconds
-          Value: "30"
-
   Cluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -133,10 +122,6 @@ Resources:
             - !ImportValue cfn-utilities:WebSecurityGroupId
             - !ImportValue cfn-utilities:EnvoySecurityGroupId
           AssignPublicIp: ENABLED
-      LoadBalancers:
-        - ContainerName: hello-world
-          ContainerPort: 80
-          TargetGroupArn: !Ref TargetGroup
       TaskDefinition: !Ref TaskDefinition
       DesiredCount: 1
       DeploymentConfiguration:
